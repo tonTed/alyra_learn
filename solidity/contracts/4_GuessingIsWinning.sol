@@ -16,6 +16,8 @@ Le jeu doit donc
 5) les joueurs seront inscrit dans un mapping qui permet de savoir si il a déjà joué
 6) avoir un getter, qui donne si il existe le gagnant.
 7) facultatif (necessite un array): faire un reset du jeu pour relancer une instance
+
+GUESSINGISWINNING AT (BC=> Kovan) 0x396d497f6dE8967c070B203e972DDffc70Bdd5F1
 */
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
