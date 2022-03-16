@@ -12,6 +12,8 @@ On a le droit de transférer au compte de l’argent quand on le souhaite
 3- On peut évidemment rajouter de l’argent sur le contrat régulièrement. Faire une fonction
 pour ça, et garder un historique (simple, d’un numero vers une quantité) des dépots dans un mapping.
 4 – Mettre en commentaire les fonctions d’admin, et rajouter onlyOwner
+
+SAVINGSDEP AT (BC=> Kovan) 0x51CD60BBcC931f3c246dA5CC0E85b62E3b0122C8
 */
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
@@ -24,7 +26,7 @@ contract SavingsDep is Ownable {
 
     modifier unlockAfterThreeMonths() {
         require(amountTxs > 0, "No transaction has been made");
-        require(block.timestamp - timeFirstTransaction >= 60, "Time since first transaction too low");
+        require(block.timestamp - timeFirstTransaction >= 90, "Time since first transaction too low");
         _;
     }
 
