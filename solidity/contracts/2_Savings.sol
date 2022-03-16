@@ -12,6 +12,8 @@ On a le droit de transférer au compte de l’argent quand on le souhaite
 3- On peut évidemment rajouter de l’argent sur le contrat régulièrement. Faire une fonction
 pour ça, et garder un historique (simple, d’un numero vers une quantité) des dépots dans un mapping.
 4 – Mettre en commentaire les fonctions d’admin, et rajouter onlyOwner
+
+SAVINGS AT (BC=> Kovan) 0x27Ff15d1d1b12D9c912787Db401Dd610d6036DB4
 */
 
 contract Savings {
