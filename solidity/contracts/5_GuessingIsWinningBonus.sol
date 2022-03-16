@@ -31,17 +31,17 @@ contract GuessingIsWinning is Ownable {
     Gamer[] gamers;
     
     modifier ditNotItPlay(){
-        require(gamerNotExists(msg.sender) , "you have already played");
+        require(gamerExists(msg.sender) == false , "you have already played");
         _;
     }
 
-    function gamerNotExists(address _addres) public view returns(bool){
+    function gamerExists(address _addres) public view returns(bool){
         for (uint i = gamers.length; i > 0; i--){
-            if (gamers[i].at == _addres){
-                return (false);
+            if (gamers[i - 1].at == _addres){
+                return (true);
             }
         }
-        return (true);
+        return (false);
     }
 
     modifier winnerNotExists(){
@@ -57,6 +57,12 @@ contract GuessingIsWinning is Ownable {
         _;
     }
 
+    function removeData() public onlyOwner {
+        for (uint i = gamers.length; i > 0; i--){
+            gamers.pop();
+            }
+        }
+
     function setWord(string calldata _word) public onlyOwner {
         word = keccak256(abi.encodePacked(_word));
     }
@@ -65,12 +71,12 @@ contract GuessingIsWinning is Ownable {
         clue = _clue;
     }
 
-    function tryWord(string calldata _tryWord) public isNotOwner winnerNotExists returns(bool){
+    function tryWord(string calldata _tryWord) public isNotOwner winnerNotExists ditNotItPlay returns(bool){
         gamers.push(Gamer(msg.sender, keccak256(abi.encodePacked(_tryWord))));
         if (keccak256(abi.encodePacked(_tryWord)) == word){
             winner = msg.sender;
             return (true);
         }
         return (false);
-    }
+	}
 }
