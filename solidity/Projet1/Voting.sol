@@ -88,11 +88,13 @@ contract Voting is Ownable {
 	}
 
 	// TODO convert mapping in list, for message if in list;
-	mapping(address => Voter) whitelist;
+	mapping(address => Voter) public whitelist;
 
 	// TODO getter status with string
 	WorkflowStatus public status;
-	Proposal[] proposals;
+
+    // TODO getter total array
+	Proposal[] public proposals;
 
 	// uint winningProposalId;
 	// or
@@ -130,6 +132,10 @@ contract Voting is Ownable {
 	// TODO function for send message to people in whitelis (need list)
 	function startProposal() external onlyOwner {
 		_changeStatus(WorkflowStatus.ProposalsRegistrationStarted);
+	}
+
+	function endProposal() external onlyOwner {
+		_changeStatus(WorkflowStatus.ProposalsRegistrationEnded);
 	}
 
 	function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {
