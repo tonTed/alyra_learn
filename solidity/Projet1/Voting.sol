@@ -103,4 +103,10 @@ contract Voting is Ownable {
 	event ProposalRegistered(uint proposalId);
 	event Voted (address voter, uint proposalId);
 
+	// TODO function to remove a voter
+	// TODO function to remove all need list and no mapping;
+	function addVoter(address _voter) external onlyOwner {
+		whitelist[_voter].isRegistered = true;
+	}
+
 }
