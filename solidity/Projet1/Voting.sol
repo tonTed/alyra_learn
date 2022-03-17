@@ -129,7 +129,7 @@ contract Voting is Ownable {
 		status = _status;
 	}
 
-	// TODO function for send message to people in whitelis (need list)
+	// TODO function for send message to people in whitelis (need list) for all of proposal and vote functions
 	function startProposal() external onlyOwner {
 		_changeStatus(WorkflowStatus.ProposalsRegistrationStarted);
 	}
@@ -138,8 +138,20 @@ contract Voting is Ownable {
 		_changeStatus(WorkflowStatus.ProposalsRegistrationEnded);
 	}
 
+	function startVote() external onlyOwner {
+		_changeStatus(WorkflowStatus.VotingSessionStarted);
+	}
+
 	function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {
         proposals.push(Proposal(_proposal, 0));
 		emit ProposalRegistered(proposals.length - 1);
+	}
+
+	// TODO manage if proposal not exists
+	function vote(uint _proposalId) public onlyRegistered isCurrentStatus(WorkflowStatus.VotingSessionStarted) {
+		require(whitelist[msg.sender].hasVoted == false, "you have already voted");
+		whitelist[msg.sender].hasVoted = true;
+		whitelist[msg.sender].votedProposalId = _proposalId;
+		proposals[_proposalId].voteCount++;
 	}
 }
