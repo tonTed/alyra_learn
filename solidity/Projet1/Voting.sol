@@ -87,6 +87,12 @@ contract Voting is Ownable {
 		VotesTallied
 	}
 
+	// TODO convert mapping in list, for message if in list;
+	mapping(address => Voter) whitelist;
+
+	// TODO getter status with string
+	WorkflowStatus public status;
+
 	// uint winningProposalId;
 	// or
 	// function getWinner(){
