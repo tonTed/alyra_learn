@@ -92,6 +92,7 @@ contract Voting is Ownable {
 
 	// TODO getter status with string
 	WorkflowStatus public status;
+	Proposal[] proposals;
 
 	// uint winningProposalId;
 	// or
@@ -103,10 +104,36 @@ contract Voting is Ownable {
 	event ProposalRegistered(uint proposalId);
 	event Voted (address voter, uint proposalId);
 
+	modifier onlyRegistered() {
+		require(whitelist[msg.sender].isRegistered == true, "You are not register!");
+		_;
+	}
+
+    // TODO manage all status message in each function calls this modifier?
+    modifier isCurrentStatus(WorkflowStatus _status) {
+        require(status == _status, "You can't do this with the current status");
+        _;
+    }
+
 	// TODO function to remove a voter
-	// TODO function to remove all need list and no mapping;
+	// TODO function to remove all (need list)
+	// TODO require for can't add voter after status
 	function addVoter(address _voter) external onlyOwner {
 		whitelist[_voter].isRegistered = true;
 	}
 
+	function _changeStatus(WorkflowStatus _status) private {
+		emit WorkflowStatusChange(status, _status);
+		status = _status;
+	}
+
+	// TODO function for send message to people in whitelis (need list)
+	function startProposal() external onlyOwner {
+		_changeStatus(WorkflowStatus.ProposalsRegistrationStarted);
+	}
+
+	function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {
+        proposals.push(Proposal(_proposal, 0));
+		emit ProposalRegistered(proposals.length - 1);
+	}
 }
