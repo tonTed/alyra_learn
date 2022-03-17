@@ -134,12 +134,16 @@ contract Voting is Ownable {
 		_changeStatus(WorkflowStatus.ProposalsRegistrationStarted);
 	}
 
-	function endProposal() external onlyOwner {
+	function stopProposal() external onlyOwner {
 		_changeStatus(WorkflowStatus.ProposalsRegistrationEnded);
 	}
 
 	function startVote() external onlyOwner {
 		_changeStatus(WorkflowStatus.VotingSessionStarted);
+	}
+
+	function stopVote() external onlyOwner {
+		_changeStatus(WorkflowStatus.VotingSessionEnded);
 	}
 
 	function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {
@@ -154,4 +158,41 @@ contract Voting is Ownable {
 		whitelist[msg.sender].votedProposalId = _proposalId;
 		proposals[_proposalId].voteCount++;
 	}
+
+	function amountVotes() external pure onlyOwner returns(uint) {
+		uint totalVotes;
+		uint len = proposals.length;
+
+		for (uint i = 0; i <  len; i++){
+			totalVotes += proposals.voteCount;
+		}
+		return (totalVotes);
+	}
 }
+
+
+/*
+	[] - "Le vote n'est pas secret" 
+		1_ il faut faire un log de tous les votes;
+		2_ ou juste si on connais l'addresse du votant on peut voir ce qu'il a voter?
+
+	[] - "Chaque électeur peut voir les votes des autres" quelle est la différence avec le précdent?
+
+	[] - "Le gagnant est déterminé à la majorité simple" si j'ai bien compris on ne dois pas gerer le cas d'une égalité et donc on prend le premier qu'on trouve.
+
+	[] - "La proposition qui obtient le plus de voix l'emporte." idem xD, quelle différence avec le précedent?
+
+	[] - "Les électeurs inscrits votent pour leurs propositions préférées." ils on le droit qu'a un vote? (petite erreurs sur le pluriel du coup :D)
+
+	[] - "Tout le monde peut vérifier les derniers détails de la proposition gagnante." c'est quoi les détails en question?
+
+	[] - structures definies, une variables ou function pour le gagnant, mais on est d'accord qu'on peux faire d'autres variables? :D
+
+	[] - Ou est la limite de la gestions des erreurs/acces pour le projet de "base"?
+		Exemples :
+			_ si une proposition n'existe pas
+			_ le message de non acces a une etape par un message general en disant que tu es pas au bon statut pour faire ca ou il faut etre verbeux pour chaque step?
+
+	Voila c'est tout pour le moment, sans doute d'autre vont venir pendant l'impletementation :D
+
+*/
