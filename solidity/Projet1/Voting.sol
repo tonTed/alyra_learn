@@ -112,6 +112,7 @@ contract Voting is Ownable {
 	}
 
     // TODO manage all status message in each function calls this modifier?
+	// TODO require for both status are equals
     modifier isCurrentStatus(WorkflowStatus _status) {
         require(status == _status, "You can't do this with the current status");
         _;
@@ -159,12 +160,13 @@ contract Voting is Ownable {
 		proposals[_proposalId].voteCount++;
 	}
 
-	function amountVotes() external pure onlyOwner returns(uint) {
+	// TODO require after start vote for call this fonction
+	function amountVotes() external view onlyOwner returns(uint) {
 		uint totalVotes;
 		uint len = proposals.length;
 
 		for (uint i = 0; i <  len; i++){
-			totalVotes += proposals.voteCount;
+			totalVotes += proposals[i].voteCount;
 		}
 		return (totalVotes);
 	}
@@ -194,5 +196,8 @@ contract Voting is Ownable {
 			_ le message de non acces a une etape par un message general en disant que tu es pas au bon statut pour faire ca ou il faut etre verbeux pour chaque step?
 
 	Voila c'est tout pour le moment, sans doute d'autre vont venir pendant l'impletementation :D
+
+	-----
+	[] - Jusqu'a quel statut pouvont-nous ajouter un votant?
 
 */
