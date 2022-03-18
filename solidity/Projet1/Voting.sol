@@ -87,13 +87,13 @@ contract Voting is Ownable {
 		VotesTallied
 	}
 
-	// TODO convert mapping in list, for message if in list;
+	// TODO_B convert mapping in list, for message if in list;
 	mapping(address => Voter) public whitelist;
 
-	// TODO getter status with string
+	// TODO_B getter status with string
 	WorkflowStatus public status;
 
-    // TODO getter total array
+    // TODO_B getter total array
 	Proposal[] public proposals;
 
 	// uint winningProposalId;
@@ -111,16 +111,16 @@ contract Voting is Ownable {
 		_;
 	}
 
-    // TODO manage all status message in each function calls this modifier?
-	// TODO require for both status are equals (not transaction fee)
+    // TODO_B manage all status message in each function calls this modifier?
+	// TODO_B require for both status are equals (not transaction fee)
     modifier isCurrentStatus(WorkflowStatus _status) {
         require(status == _status, "You can't do this with the current status");
         _;
     }
 
-	// TODO function to remove a voter
-	// TODO function to remove all (need list)
-	// TODO require for can't add voter after status
+	// TODO_B function to remove a voter
+	// TODO_B function to remove all (need list)
+	// TODO_B require for can't add voter after status
 	function addVoter(address _voter) external onlyOwner {
 		whitelist[_voter].isRegistered = true;
 	}
@@ -130,7 +130,7 @@ contract Voting is Ownable {
 		status = _status;
 	}
 
-	// TODO function for send message to people in whitelis (need list) for all of proposal and vote functions
+	// TODO_B function for send message to people in whitelis (need list) for all of proposal and vote functions
 	function startProposal() external onlyOwner {
 		_changeStatus(WorkflowStatus.ProposalsRegistrationStarted);
 	}
@@ -152,7 +152,7 @@ contract Voting is Ownable {
 		emit ProposalRegistered(proposals.length - 1);
 	}
 
-	// TODO manage if proposal not exists
+	// TODO_B manage if proposal not exists
 	function vote(uint _proposalId) public onlyRegistered isCurrentStatus(WorkflowStatus.VotingSessionStarted) {
 		require(whitelist[msg.sender].hasVoted == false, "you have already voted");
 		whitelist[msg.sender].hasVoted = true;
@@ -160,7 +160,7 @@ contract Voting is Ownable {
 		proposals[_proposalId].voteCount++;
 	}
 
-	// TODO require after start vote for call this fonction
+	// TODO_B require after start vote for call this fonction
 	function amountVotes() external view onlyOwner returns(uint) {
 		uint totalVotes;
 		uint len = proposals.length;
@@ -169,6 +169,20 @@ contract Voting is Ownable {
 			totalVotes += proposals[i].voteCount;
 		}
 		return (totalVotes);
+	}
+
+	// TODO_B Manage if anybody has voted
+	// TODO_B Manage status.
+	function getWinner() public view returns (uint){
+		uint bigger;
+		uint len = proposals.length;
+
+		for (uint i = 1; i < len; i++){
+			if (proposals[i].voteCount > proposals[bigger].voteCount){
+				bigger = i;
+			}
+		}
+		return (bigger);
 	}
 }
 
