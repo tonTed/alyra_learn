@@ -93,7 +93,7 @@ contract Voting is Ownable {
 	// TODO_B getter status with string
 	WorkflowStatus public status;
 
-    // TODO_B getter total array
+	// TODO_B getter total array
 	Proposal[] public proposals;
 
 	// uint winningProposalId;
@@ -111,12 +111,20 @@ contract Voting is Ownable {
 		_;
 	}
 
-    // TODO_B manage all status message in each function calls this modifier?
+	// TODO_B manage all status message in each function calls this modifier?
 	// TODO_B require for both status are equals (not transaction fee)
     modifier isCurrentStatus(WorkflowStatus _status) {
         require(status == _status, "You can't do this with the current status");
         _;
     }
+
+	modifier workflowRespected(WorkflowStatus _status){
+		if (uint(_status) != 0){
+			require(uint(_status) - 1 == uint(status), "The workflow is not respected");
+		}
+		_;
+	}
+
 
 	// TODO_B function to remove a voter
 	// TODO_B function to remove all (need list)
@@ -125,7 +133,7 @@ contract Voting is Ownable {
 		whitelist[_voter].isRegistered = true;
 	}
 
-	function _changeStatus(WorkflowStatus _status) private {
+	function _changeStatus(WorkflowStatus _status) private workflowRespected(_status) {
 		emit WorkflowStatusChange(status, _status);
 		status = _status;
 	}
