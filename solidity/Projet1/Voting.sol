@@ -112,7 +112,7 @@ contract Voting is Ownable {
 	}
 
     // TODO manage all status message in each function calls this modifier?
-	// TODO require for both status are equals
+	// TODO require for both status are equals (not transaction fee)
     modifier isCurrentStatus(WorkflowStatus _status) {
         require(status == _status, "You can't do this with the current status");
         _;
