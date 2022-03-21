@@ -8,7 +8,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 **
 **	TODO list bonus :
 **		[x] - Manage if voter already added
-**		[] - Manage if duplicates proposals
+**		[x] - Manage if duplicates proposals
 **		[] - Send message when worflow change
 **		[x] - Getter status return string
 **		[x] - Getter total array of proposals
