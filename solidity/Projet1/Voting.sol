@@ -7,7 +7,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 /*
 **
 **	TODO list bonus :
-**		[] - Manage if voter already added
+**		[x] - Manage if voter already added
 **		[] - Manage if duplicates proposals
 **		[] - Send message when worflow change
 **		[] - Getter status return string
@@ -15,7 +15,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 **		[] - Getter voter add condition if no voted
 **		[] - Explicit bad current status
 **		[x] - Function to remove a voter
-**		[] - Function to reset.
+**		[x] - Function to reset TODO -> to test
 **		[] - Manage equals
 */
 
@@ -117,16 +117,6 @@ contract Voting is Ownable {
 		_whitelist.push(_voter);
 	}
 
-	// TODO function for new list without the voter removed
-	function removeVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
-		whitelist[_voter].isRegistered = false;
-		for (uint i = _whitelist.length - 1; i >= 0; i--) {
-			if (_whitelist[i] == _voter) {
-				whitelist[_voter].isRegistered = false;
-			}
-		}
-	}
-
 
 	function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {
         proposals.push(Proposal(_proposal, 0));
@@ -154,4 +144,34 @@ contract Voting is Ownable {
 		}
 		return (bigger);
 	}
+
+	// BONUS
+		// TODO function for new list without the voter removed
+		function removeVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
+			whitelist[_voter].isRegistered = false;
+			for (uint i = _whitelist.length - 1; i >= 0; i--) {
+				if (_whitelist[i] == _voter) {
+					whitelist[_voter].isRegistered = false;
+				}
+			}
+		}
+
+		function _resetProposals() private {
+			delete proposals;
+		}
+
+		function _resetWhitelist() private {
+			if (_whitelist.length > 0) {
+				for (uint i = _whitelist.length; i > 0; i--) {
+					whitelist[_whitelist[i - 1]] = Voter(false, false, 0);
+					_whitelist.pop();
+				}
+			}
+		}
+
+		function reset() external onlyOwner isCurrentStatus(WorkflowStatus.VotesTallied){
+			status = WorkflowStatus.RegisteringVoters;
+			_resetProposals();
+			_resetWhitelist();
+		}
 }
