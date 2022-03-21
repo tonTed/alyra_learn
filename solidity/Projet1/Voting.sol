@@ -5,8 +5,6 @@ pragma solidity 0.8.13;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
 /*
-**	TODO list mandatory :
-**		[] - Refactor in one function steps workflow
 **
 **	TODO list bonus :
 **		[] - Manage if voter already added
@@ -16,7 +14,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 **		[] - Getter total array of proposals
 **		[] - Getter voter add condition if no voted
 **		[] - Explicit bad current status
-**		[] - Function to remove a voter
+**		[x] - Function to remove a voter
 **		[] - Function to reset.
 **		[] - Manage equals
 */
@@ -43,6 +41,7 @@ contract Voting is Ownable {
 		}
 
 		mapping(address => Voter) public whitelist;
+		address[] private _whitelist;
 		WorkflowStatus public status;
 		Proposal[] public proposals;
 
@@ -114,7 +113,19 @@ contract Voting is Ownable {
 
 	function addVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
 		whitelist[_voter].isRegistered = true;
+		_whitelist.push(_voter);
 	}
+
+	// TODO function for new list without the voter removed
+	function removeVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
+		whitelist[_voter].isRegistered = false;
+		for (uint i = _whitelist.length - 1; i >= 0; i--) {
+			if (_whitelist[i] == _voter) {
+				whitelist[_voter].isRegistered = false;
+			}
+		}
+	}
+
 
 	function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {
         proposals.push(Proposal(_proposal, 0));
