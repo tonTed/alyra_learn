@@ -9,85 +9,111 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 **		[] - Refactor in one function steps workflow
 **
 **	TODO list bonus :
+**		[] - Manage if voter already added
+**		[] - Manage if duplicates proposals
 **		[] - Send message when worflow change
 **		[] - Getter status return string
 **		[] - Getter total array of proposals
+**		[] - Getter voter add condition if no voted
 **		[] - Explicit bad current status
 **		[] - Function to remove a voter
 **		[] - Function to reset.
-**		[] - Manage if duplicates proposals
 **		[] - Manage equals
 */
 
 contract Voting is Ownable {
 
-	struct Voter {
-		bool isRegistered;
-		bool hasVoted;
-		uint votedProposalId;
-	}
-	struct Proposal {
-		string description;
-		uint voteCount;
-	}
-	enum WorkflowStatus {
-		RegisteringVoters,
-		ProposalsRegistrationStarted,
-		ProposalsRegistrationEnded,
-		VotingSessionStarted,
-		VotingSessionEnded,
-		VotesTallied
-	}
-
-	mapping(address => Voter) public whitelist;
-	WorkflowStatus public status;
-	Proposal[] public proposals;
-
-	event VoterRegistered(address voterAddress); 
-	event WorkflowStatusChange(WorkflowStatus previousStatus, WorkflowStatus newStatus);
-	event ProposalRegistered(uint proposalId);
-	event Voted (address voter, uint proposalId);
-
-	modifier onlyRegistered() {
-		require(whitelist[msg.sender].isRegistered == true, "You are not register!");
-		_;
-	}
-
-    modifier isCurrentStatus(WorkflowStatus _status) {
-        require(status == _status, "You can't do this with the current status");
-        _;
-    }
-
-	modifier workflowRespected(WorkflowStatus _status){
-		if (uint(_status) != 0){
-			require(uint(_status) - 1 == uint(status), "The workflow is not respected");
+	// Declaration
+		struct Voter {
+			bool isRegistered;
+			bool hasVoted;
+			uint votedProposalId;
 		}
-		_;
-	}
+		struct Proposal {
+			string description;
+			uint voteCount;
+		}
+		enum WorkflowStatus {
+			RegisteringVoters,
+			ProposalsRegistrationStarted,
+			ProposalsRegistrationEnded,
+			VotingSessionStarted,
+			VotingSessionEnded,
+			VotesTallied
+		}
 
-	function _changeStatus(WorkflowStatus _status) private workflowRespected(_status) {
-		emit WorkflowStatusChange(status, _status);
-		status = _status;
+		mapping(address => Voter) public whitelist;
+		WorkflowStatus public status;
+		Proposal[] public proposals;
+
+	// Events
+		event VoterRegistered(address voterAddress); 
+		event WorkflowStatusChange(WorkflowStatus previousStatus, WorkflowStatus newStatus);
+		event ProposalRegistered(uint proposalId);
+		event Voted (address voter, uint proposalId);
+
+	// Modifier
+		modifier onlyRegistered() {
+			require(whitelist[msg.sender].isRegistered == true, "You are not register!");
+			_;
+		}
+
+		modifier isCurrentStatus(WorkflowStatus _status) {
+			require(status == _status, "You can't do this with the current status");
+			_;
+		}
+
+		modifier workflowRespected(WorkflowStatus _status){
+			if (uint(_status) != 0){
+				require(uint(_status) - 1 == uint(status), "The workflow is not respected");
+			}
+			_;
+		}
+
+	/* Old functions
+		function _changeStatus(WorkflowStatus _status) private workflowRespected(_status) {
+			emit WorkflowStatusChange(status, _status);
+			status = _status;
+		}
+
+		function startProposal() external onlyOwner {
+			_changeStatus(WorkflowStatus.ProposalsRegistrationStarted);
+		}
+
+		function stopProposal() external onlyOwner {
+			_changeStatus(WorkflowStatus.ProposalsRegistrationEnded);
+		}
+
+		function startVote() external onlyOwner {
+			_changeStatus(WorkflowStatus.VotingSessionStarted);
+		}
+
+		function stopVote() external onlyOwner {
+			_changeStatus(WorkflowStatus.VotingSessionEnded);
+		}
+	*/
+	// Private functions
+		function _votesCount() private view returns(uint){
+			uint totalVotes;
+			uint len = proposals.length;
+
+			for (uint i = 0; i <  len; i++){
+				totalVotes += proposals[i].voteCount;
+			}
+			return (totalVotes);
+		}
+
+	function nextStep() external onlyOwner {
+		require(status < WorkflowStatus.VotesTallied, "Votes are Tallied, the votes are over");
+		if (status == WorkflowStatus.VotingSessionEnded) {
+			_votesCount();
+		}
+		emit WorkflowStatusChange(status, WorkflowStatus(uint(status) + 1));
+		status = WorkflowStatus(uint(status) + 1);
 	}
 
 	function addVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
 		whitelist[_voter].isRegistered = true;
-	}
-
-	function startProposal() external onlyOwner {
-		_changeStatus(WorkflowStatus.ProposalsRegistrationStarted);
-	}
-
-	function stopProposal() external onlyOwner {
-		_changeStatus(WorkflowStatus.ProposalsRegistrationEnded);
-	}
-
-	function startVote() external onlyOwner {
-		_changeStatus(WorkflowStatus.VotingSessionStarted);
-	}
-
-	function stopVote() external onlyOwner {
-		_changeStatus(WorkflowStatus.VotingSessionEnded);
 	}
 
 	function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {
@@ -95,33 +121,17 @@ contract Voting is Ownable {
 		emit ProposalRegistered(proposals.length - 1);
 	}
 
-	function vote(uint _proposalId) public onlyRegistered isCurrentStatus(WorkflowStatus.VotingSessionStarted) {
+	function vote(uint _proposalId) external onlyRegistered isCurrentStatus(WorkflowStatus.VotingSessionStarted) {
 		require(whitelist[msg.sender].hasVoted == false, "you have already voted");
-		require(_prosalID < proposals.length, "proposal do not exists");
+		require(_proposalId < proposals.length, "proposal do not exists");
 		whitelist[msg.sender].hasVoted = true;
 		whitelist[msg.sender].votedProposalId = _proposalId;
 		proposals[_proposalId].voteCount++;
 		emit Voted(msg.sender, _proposalId);
 	}
 
-	function _votesCount() private returns(uint){
-		uint totalVotes;
-		uint len = proposals.length;
-
-		for (uint i = 0; i <  len; i++){
-			totalVotes += proposals[i].voteCount;
-		}
-		return (totalVotes);
-	}
-
-	function amountVotes() external view onlyOwner isCurrentStatus(WorkflowStatus.VotingSessionEnded) returns(uint) {
-		uint totalVotes = _votesCount();
-		_changeStatus(WorkflowStatus.VotesTallied);
-		return (totalVotes);
-	}
-
-	function getWinner() public view isCurrentStatus(WorkflowStatus.VotesTallied) returns (uint){
-		require(_votesCount(), "nobody voted");
+	function getWinner() external view isCurrentStatus(WorkflowStatus.VotesTallied) returns (uint){
+		require(_votesCount() > 0, "nobody voted");
 		uint bigger;
 		uint len = proposals.length;
 
