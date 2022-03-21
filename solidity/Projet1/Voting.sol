@@ -174,4 +174,20 @@ contract Voting is Ownable {
 			_resetProposals();
 			_resetWhitelist();
 		}
+
+		function getCurrentStatus() external returns (string memory){
+			if (status = WorkflowStatus.RegisteringVoters){
+				return ("Registering voters");
+			} else if (status = WorkflowStatus.ProposalsRegistrationStarted){
+				return ("Proposals registration started");
+			} else if (status = WorkflowStatus.ProposalsRegistrationEnded){
+				return ("Proposals registration ended");
+			} else if (status = WorkflowStatus.VotingSessionStarted){
+				return ("Voting session started");
+			} else if (status = WorkflowStatus.VotingSessionEnded){
+				return ("Voting session ended");
+			} else if (status = WorkflowStatus.VotesTallied){
+				return ("Votes tallied");
+			} else { return ("Error");}
+		}
 }
