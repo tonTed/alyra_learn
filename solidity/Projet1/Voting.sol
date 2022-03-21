@@ -10,8 +10,8 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 **		[x] - Manage if voter already added
 **		[] - Manage if duplicates proposals
 **		[] - Send message when worflow change
-**		[] - Getter status return string
-**		[] - Getter total array of proposals
+**		[x] - Getter status return string
+**		[x] - Getter total array of proposals
 **		[] - Getter voter add condition if no voted
 **		[] - Explicit bad current status
 **		[x] - Function to remove a voter
@@ -42,8 +42,8 @@ contract Voting is Ownable {
 
 		mapping(address => Voter) public whitelist;
 		address[] private _whitelist;
-		WorkflowStatus public status;
-		Proposal[] public proposals;
+		WorkflowStatus private status;
+		Proposal[] private proposals;
 
 	// Events
 		event VoterRegistered(address voterAddress); 
@@ -66,6 +66,11 @@ contract Voting is Ownable {
 			if (uint(_status) != 0){
 				require(uint(_status) - 1 == uint(status), "The workflow is not respected");
 			}
+			_;
+		}
+
+		modifier proposalExists(uint _proposalId){
+			require(_proposalId < proposals.length, "proposal do not exists");
 			_;
 		}
 
@@ -102,48 +107,48 @@ contract Voting is Ownable {
 			return (totalVotes);
 		}
 
-	function nextStep() external onlyOwner {
-		require(status < WorkflowStatus.VotesTallied, "Votes are Tallied, the votes are over");
-		if (status == WorkflowStatus.VotingSessionEnded) {
-			_votesCount();
-		}
-		emit WorkflowStatusChange(status, WorkflowStatus(uint(status) + 1));
-		status = WorkflowStatus(uint(status) + 1);
-	}
-
-	function addVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
-		require(whitelist[_voter].isRegistered == false, "Voter already registered");
-		whitelist[_voter].isRegistered = true;
-		_whitelist.push(_voter);
-	}
-
-
-	function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {
-        proposals.push(Proposal(_proposal, 0));
-		emit ProposalRegistered(proposals.length - 1);
-	}
-
-	function vote(uint _proposalId) external onlyRegistered isCurrentStatus(WorkflowStatus.VotingSessionStarted) {
-		require(whitelist[msg.sender].hasVoted == false, "you have already voted");
-		require(_proposalId < proposals.length, "proposal do not exists");
-		whitelist[msg.sender].hasVoted = true;
-		whitelist[msg.sender].votedProposalId = _proposalId;
-		proposals[_proposalId].voteCount++;
-		emit Voted(msg.sender, _proposalId);
-	}
-
-	function getWinner() external view isCurrentStatus(WorkflowStatus.VotesTallied) returns (uint){
-		require(_votesCount() > 0, "nobody voted");
-		uint bigger;
-		uint len = proposals.length;
-
-		for (uint i = 1; i < len; i++){
-			if (proposals[i].voteCount > proposals[bigger].voteCount){
-				bigger = i;
+	// External Functions
+		function nextStep() external onlyOwner {
+			require(status < WorkflowStatus.VotesTallied, "Votes are Tallied, the votes are over");
+			if (status == WorkflowStatus.VotingSessionEnded) {
+				_votesCount();
 			}
+			emit WorkflowStatusChange(status, WorkflowStatus(uint(status) + 1));
+			status = WorkflowStatus(uint(status) + 1);
 		}
-		return (bigger);
-	}
+
+		function addVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
+			require(whitelist[_voter].isRegistered == false, "Voter already registered");
+			whitelist[_voter].isRegistered = true;
+			_whitelist.push(_voter);
+		}
+
+		function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {
+			require(_proposalExists(_proposal) != true, "The proposal already exists");
+			proposals.push(Proposal(_proposal, 0));
+			emit ProposalRegistered(proposals.length - 1);
+		}
+
+		function vote(uint _proposalId) external onlyRegistered isCurrentStatus(WorkflowStatus.VotingSessionStarted) proposalExists(_proposalId) {
+			require(whitelist[msg.sender].hasVoted == false, "you have already voted");
+			whitelist[msg.sender].hasVoted = true;
+			whitelist[msg.sender].votedProposalId = _proposalId;
+			proposals[_proposalId].voteCount++;
+			emit Voted(msg.sender, _proposalId);
+		}
+
+		function getWinner() external view isCurrentStatus(WorkflowStatus.VotesTallied) returns (uint){
+			require(_votesCount() > 0, "nobody voted");
+			uint bigger;
+			uint len = proposals.length;
+
+			for (uint i = 1; i < len; i++){
+				if (proposals[i].voteCount > proposals[bigger].voteCount){
+					bigger = i;
+				}
+			}
+			return (bigger);
+		}
 
 	// BONUS
 		// TODO function for new list without the voter removed
@@ -175,19 +180,44 @@ contract Voting is Ownable {
 			_resetWhitelist();
 		}
 
-		function getCurrentStatus() external returns (string memory){
-			if (status = WorkflowStatus.RegisteringVoters){
+		function getCurrentStatus() external view returns (string memory){
+			if (status == WorkflowStatus.RegisteringVoters){
 				return ("Registering voters");
-			} else if (status = WorkflowStatus.ProposalsRegistrationStarted){
+			} else if (status == WorkflowStatus.ProposalsRegistrationStarted){
 				return ("Proposals registration started");
-			} else if (status = WorkflowStatus.ProposalsRegistrationEnded){
+			} else if (status == WorkflowStatus.ProposalsRegistrationEnded){
 				return ("Proposals registration ended");
-			} else if (status = WorkflowStatus.VotingSessionStarted){
+			} else if (status == WorkflowStatus.VotingSessionStarted){
 				return ("Voting session started");
-			} else if (status = WorkflowStatus.VotingSessionEnded){
+			} else if (status == WorkflowStatus.VotingSessionEnded){
 				return ("Voting session ended");
-			} else if (status = WorkflowStatus.VotesTallied){
+			} else if (status == WorkflowStatus.VotesTallied){
 				return ("Votes tallied");
 			} else { return ("Error");}
+		}
+
+		function getProposals() external view returns (Proposal[] memory){
+			require(proposals.length > 0, "List of proposals are empty");
+			return(proposals);
+		}
+
+		function getProposal(uint _index) external view proposalExists(_index) returns (Proposal memory){
+			return(proposals[_index]);
+		}
+
+		function _strcmp(string calldata s1, string calldata s2) private returns (bool){
+			if (keccak256(abi.encodePacked(s1)) == keccak256(abi.encodePacked(s2))){
+				return (true);
+			}
+			return (false);
+		}
+
+		function _proposalExists(string calldata s1) private returns (bool){
+			for (uint i = proposals.length; i > 0; i--){
+				if (_strcmp(s1, proposals[i - 1]) == true){
+					return (true);
+				}
+			}
+			return (false);
 		}
 }
