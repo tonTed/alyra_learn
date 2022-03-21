@@ -112,6 +112,7 @@ contract Voting is Ownable {
 	}
 
 	function addVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
+		require(whitelist[_voter].isRegistered == false, "Voter already registered");
 		whitelist[_voter].isRegistered = true;
 		_whitelist.push(_voter);
 	}
