@@ -12,8 +12,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 **		[] - Send message when worflow change
 **		[x] - Getter status return string
 **		[x] - Getter total array of proposals
-**		[] - Getter voter add condition if no voted
-**		[] - Explicit bad current status
+**		[x] - Getter voter add condition if no voted
 **		[x] - Function to remove a voter
 **		[x] - Function to reset TODO -> to test
 **		[] - Manage equals
@@ -50,6 +49,7 @@ contract Voting is Ownable {
 		event WorkflowStatusChange(WorkflowStatus previousStatus, WorkflowStatus newStatus);
 		event ProposalRegistered(uint proposalId);
 		event Voted (address voter, uint proposalId);
+		event LogNotSent(WorkflowStatus status, address registered);
 
 	// Modifier
 		modifier onlyRegistered() {
@@ -115,6 +115,7 @@ contract Voting is Ownable {
 			}
 			emit WorkflowStatusChange(status, WorkflowStatus(uint(status) + 1));
 			status = WorkflowStatus(uint(status) + 1);
+			_notificationToRegistered();
 		}
 
 		function addVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
@@ -205,19 +206,34 @@ contract Voting is Ownable {
 			return(proposals[_index]);
 		}
 
-		function _strcmp(string calldata s1, string calldata s2) private returns (bool){
+		function _strcmp(string calldata s1, string memory s2) private pure returns (bool){
 			if (keccak256(abi.encodePacked(s1)) == keccak256(abi.encodePacked(s2))){
 				return (true);
 			}
 			return (false);
 		}
 
-		function _proposalExists(string calldata s1) private returns (bool){
+		function _proposalExists(string calldata s1) private view returns (bool){
 			for (uint i = proposals.length; i > 0; i--){
-				if (_strcmp(s1, proposals[i - 1]) == true){
+				if (_strcmp(s1, proposals[i - 1].description) == true){
 					return (true);
 				}
 			}
 			return (false);
+		}
+
+	event Response(bool success, bytes data);
+	event Debug(bool sent, bytes data);
+	// Work in progress
+		function _notificationToRegistered() private {
+			for (uint i = _whitelist.length; i > 0; i--){
+				if (whitelist[_whitelist[i - 1]].isRegistered == true){
+					(bool success,bytes memory data) = address(_whitelist[i - 1]).call(abi.encodeWithSignature("test"));
+					emit Response(success, data);
+					if (!success){
+						emit LogNotSent(status, _whitelist[i - 1]);
+					}
+				}
+			}
 		}
 }
