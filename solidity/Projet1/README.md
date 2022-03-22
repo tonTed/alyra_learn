@@ -2,9 +2,9 @@
 
 ## Table of contents
 - [Subject](#subject)
-	- [Description](#description:)
-	- [Requirements](#requirements:)
-	- [Voting process](#voting-process:)
+	- [Description](#description)
+	- [Requirements](#requirements)
+	- [Voting process](#voting-process)
 - [Madatory Implementation](#mandatory-implementation)
 	- [Modifier](#modifier)
 	- [Private functions](#private-functions)
