@@ -146,6 +146,10 @@ function _resetProposals() private {
 	delete proposals;
 }
 
+function _resetWaitingList() private {
+	delete _waitingRegistered;
+}
+
 function _resetWhitelist() private {
 	if (_whitelist.length > 0) {
 		for (uint i = _whitelist.length; i > 0; i--) {

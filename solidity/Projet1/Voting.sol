@@ -140,6 +140,10 @@ contract Voting is Ownable {
 				this.addVoter(_waitingRegistered[i - 1]);
 			}
 		}
+
+		function _resetWaitingList() private {
+			delete _waitingRegistered;
+		}
 		
 		// TODO function for new list without the voter removed
 		function removeVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
@@ -168,6 +172,7 @@ contract Voting is Ownable {
 			status = WorkflowStatus.RegisteringVoters;
 			_resetProposals();
 			_resetWhitelist();
+			_resetWaitingList();
 		}
 
 		function _strcmp(string calldata s1, string memory s2) private pure returns (bool){
