@@ -3,3 +3,4 @@ openzeppelin-contracts/
 tmp.sol
 Pipfile
 Pipfile.lock
+simple-storage-truffle/*
