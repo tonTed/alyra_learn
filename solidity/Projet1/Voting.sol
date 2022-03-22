@@ -4,12 +4,6 @@ pragma solidity 0.8.13;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
-/*
-**	TODO list bonus :
-**		[] - Send message when worflow change
-**		[] - Manage equals
-*/
-
 contract Voting is Ownable {
 
 	// Mandatory implementation
@@ -72,6 +66,9 @@ contract Voting is Ownable {
 			return (totalVotes);
 		}
 
+		/*
+		** This function loops through the steps in order
+		*/
 		function nextStep() external onlyOwner {
 			require(status < WorkflowStatus.VotesTallied, "Votes are Tallied, the votes are over");
 			if (status == WorkflowStatus.VotingSessionEnded) {
@@ -147,31 +144,6 @@ contract Voting is Ownable {
 			_resetWhitelist();
 		}
 
-		function getCurrentStatus() external view returns (string memory){
-			if (status == WorkflowStatus.RegisteringVoters){
-				return ("Registering voters");
-			} else if (status == WorkflowStatus.ProposalsRegistrationStarted){
-				return ("Proposals registration started");
-			} else if (status == WorkflowStatus.ProposalsRegistrationEnded){
-				return ("Proposals registration ended");
-			} else if (status == WorkflowStatus.VotingSessionStarted){
-				return ("Voting session started");
-			} else if (status == WorkflowStatus.VotingSessionEnded){
-				return ("Voting session ended");
-			} else if (status == WorkflowStatus.VotesTallied){
-				return ("Votes tallied");
-			} else { return ("Error");}
-		}
-
-		function getProposals() external view returns (Proposal[] memory){
-			require(proposals.length > 0, "List of proposals are empty");
-			return(proposals);
-		}
-
-		function getProposal(uint _index) external view proposalExists(_index) returns (Proposal memory){
-			return(proposals[_index]);
-		}
-
 		function _strcmp(string calldata s1, string memory s2) private pure returns (bool){
 			if (keccak256(abi.encodePacked(s1)) == keccak256(abi.encodePacked(s2))){
 				return (true);
@@ -188,18 +160,49 @@ contract Voting is Ownable {
 			return (false);
 		}
 
-	// Work in progress
-		event LogNotSent(WorkflowStatus status, address registered);
-		event Response(bool success, bytes data);
-		function _notificationToRegistered() private {
-			for (uint i = _whitelist.length; i > 0; i--){
-				if (whitelist[_whitelist[i - 1]].isRegistered == true){
-					(bool success,bytes memory data) = address(_whitelist[i - 1]).call(abi.encodeWithSignature("test"));
-					emit Response(success, data);
-					if (!success){
-						emit LogNotSent(status, _whitelist[i - 1]);
+
+		/* ⚠️
+		** These functions were implemented to make them more verbose, however
+		** during a real project they will be managed by the front-end and not
+		** by the contract
+		*/
+			function getCurrentStatus() external view returns (string memory){
+				if (status == WorkflowStatus.RegisteringVoters){
+					return ("Registering voters");
+				} else if (status == WorkflowStatus.ProposalsRegistrationStarted){
+					return ("Proposals registration started");
+				} else if (status == WorkflowStatus.ProposalsRegistrationEnded){
+					return ("Proposals registration ended");
+				} else if (status == WorkflowStatus.VotingSessionStarted){
+					return ("Voting session started");
+				} else if (status == WorkflowStatus.VotingSessionEnded){
+					return ("Voting session ended");
+				} else if (status == WorkflowStatus.VotesTallied){
+					return ("Votes tallied");
+				} else { return ("Error");}
+			}
+
+			function getProposals() external view returns (Proposal[] memory){
+				require(proposals.length > 0, "List of proposals are empty");
+				return(proposals);
+			}
+
+			function getProposal(uint _index) external view proposalExists(_index) returns (Proposal memory){
+				return(proposals[_index]);
+			}
+
+			// Work in progress
+				event LogNotSent(WorkflowStatus status, address registered);
+				event Response(bool success, bytes data);
+				function _notificationToRegistered() private {
+					for (uint i = _whitelist.length; i > 0; i--){
+						if (whitelist[_whitelist[i - 1]].isRegistered == true){
+							(bool success,bytes memory data) = address(_whitelist[i - 1]).call(abi.encodeWithSignature("test"));
+							emit Response(success, data);
+							if (!success){
+								emit LogNotSent(status, _whitelist[i - 1]);
+							}
+						}
 					}
 				}
-			}
-		}
 }

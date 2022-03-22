@@ -159,7 +159,7 @@ function reset() external onlyOwner isCurrentStatus(WorkflowStatus.VotesTallied)
 	status = WorkflowStatus.RegisteringVoters;
 	_resetProposals();
 	_resetWhitelist();
-		}
+}
 ```
 
 ### Proposals exists
@@ -186,6 +186,7 @@ function _proposalExists(string calldata s1) private view returns (bool){
 
 ### Explicit getters
 Getter data more explicit
+> :danger: These functions were implemented to make them more verbose, however during a real project they will be managed by the front-end and not by the contract
 
 ```solidity
 function getCurrentStatus() external view returns (string memory){
