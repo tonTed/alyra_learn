@@ -5,22 +5,14 @@ pragma solidity 0.8.13;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
 /*
-**
 **	TODO list bonus :
-**		[x] - Manage if voter already added
-**		[x] - Manage if duplicates proposals
 **		[] - Send message when worflow change
-**		[x] - Getter status return string
-**		[x] - Getter total array of proposals
-**		[x] - Getter voter add condition if no voted
-**		[x] - Function to remove a voter
-**		[x] - Function to reset TODO -> to test
 **		[] - Manage equals
 */
 
 contract Voting is Ownable {
 
-	// Declaration
+	// Mandatory implementation
 		struct Voter {
 			bool isRegistered;
 			bool hasVoted;
@@ -40,18 +32,14 @@ contract Voting is Ownable {
 		}
 
 		mapping(address => Voter) public whitelist;
-		address[] private _whitelist;
-		WorkflowStatus private status;
-		Proposal[] private proposals;
+		WorkflowStatus public status;
+		Proposal[] public proposals;
 
-	// Events
 		event VoterRegistered(address voterAddress); 
 		event WorkflowStatusChange(WorkflowStatus previousStatus, WorkflowStatus newStatus);
 		event ProposalRegistered(uint proposalId);
 		event Voted (address voter, uint proposalId);
-		event LogNotSent(WorkflowStatus status, address registered);
 
-	// Modifier
 		modifier onlyRegistered() {
 			require(whitelist[msg.sender].isRegistered == true, "You are not register!");
 			_;
@@ -74,29 +62,6 @@ contract Voting is Ownable {
 			_;
 		}
 
-	/* Old functions
-		function _changeStatus(WorkflowStatus _status) private workflowRespected(_status) {
-			emit WorkflowStatusChange(status, _status);
-			status = _status;
-		}
-
-		function startProposal() external onlyOwner {
-			_changeStatus(WorkflowStatus.ProposalsRegistrationStarted);
-		}
-
-		function stopProposal() external onlyOwner {
-			_changeStatus(WorkflowStatus.ProposalsRegistrationEnded);
-		}
-
-		function startVote() external onlyOwner {
-			_changeStatus(WorkflowStatus.VotingSessionStarted);
-		}
-
-		function stopVote() external onlyOwner {
-			_changeStatus(WorkflowStatus.VotingSessionEnded);
-		}
-	*/
-	// Private functions
 		function _votesCount() private view returns(uint){
 			uint totalVotes;
 			uint len = proposals.length;
@@ -107,7 +72,6 @@ contract Voting is Ownable {
 			return (totalVotes);
 		}
 
-	// External Functions
 		function nextStep() external onlyOwner {
 			require(status < WorkflowStatus.VotesTallied, "Votes are Tallied, the votes are over");
 			if (status == WorkflowStatus.VotingSessionEnded) {
@@ -152,6 +116,8 @@ contract Voting is Ownable {
 		}
 
 	// BONUS
+		address[] private _whitelist;
+
 		// TODO function for new list without the voter removed
 		function removeVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
 			whitelist[_voter].isRegistered = false;
@@ -222,9 +188,9 @@ contract Voting is Ownable {
 			return (false);
 		}
 
-	event Response(bool success, bytes data);
-	event Debug(bool sent, bytes data);
 	// Work in progress
+		event LogNotSent(WorkflowStatus status, address registered);
+		event Response(bool success, bytes data);
 		function _notificationToRegistered() private {
 			for (uint i = _whitelist.length; i > 0; i--){
 				if (whitelist[_whitelist[i - 1]].isRegistered == true){
