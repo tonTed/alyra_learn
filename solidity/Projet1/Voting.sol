@@ -76,7 +76,7 @@ contract Voting is Ownable {
 			}
 			emit WorkflowStatusChange(status, WorkflowStatus(uint(status) + 1));
 			status = WorkflowStatus(uint(status) + 1);
-			_notificationToRegistered();
+			//_notificationToRegistered();
 		}
 
 		function addVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
@@ -192,6 +192,7 @@ contract Voting is Ownable {
 			}
 
 			// Work in progress
+			/*
 				event LogNotSent(WorkflowStatus status, address registered);
 				event Response(bool success, bytes data);
 				function _notificationToRegistered() private {
@@ -205,4 +206,5 @@ contract Voting is Ownable {
 						}
 					}
 				}
+			*/
 }
