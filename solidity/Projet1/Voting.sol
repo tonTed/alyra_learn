@@ -129,6 +129,11 @@ contract Voting is Ownable {
 			require(!_addressExists(_waitingRegistered), "You are already on the waiting list");
 			_waitingRegistered.push(msg.sender);
 		}
+
+		function getWaitingListRegistered() external view onlyOwner returns (address[] memory){
+			require(_waitingRegistered.length > 0, "The waitting list is empty");
+			return (_waitingRegistered);
+		}
 		
 		// TODO function for new list without the voter removed
 		function removeVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
