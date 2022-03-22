@@ -11,6 +11,13 @@
 	- [External function called only by Owner](#External-function-called-only-by-owner)
 	- [External function](#External-function)
 - [Bonus Implementation](#bonus-implementation)
+	- [New variables](#New-Variables)
+	- [Remove voter](#Remove-voter)
+	- [Reset](#Reset)
+	- [Proposals exists](#Proposals-exists)
+	- [Explicit getters](#Explicit-getters)
+- [TODO](#todo)
+
 
 ## Subject
 
@@ -110,26 +117,29 @@ function getWinner() external view isCurrentStatus(WorkflowStatus.VotesTallied) 
 
 ## Bonus implementation
 
-### For various bonus we need a list of voters registered**
+### New Variables
+For various bonus we need a list of voters registered
 
 ```solidity
 address[] private _whitelist;
 ```
 
-### Remove a voter during the status `RegisteringVoters`
+### Remove voter
+Remove a voter during the status `RegisteringVoters`
 
 ```solidity
 function removeVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
+	whitelist[_voter].isRegistered = false;
+	for (uint i = _whitelist.length - 1; i >= 0; i--) {
+		if (_whitelist[i] == _voter) {
 			whitelist[_voter].isRegistered = false;
-			for (uint i = _whitelist.length - 1; i >= 0; i--) {
-				if (_whitelist[i] == _voter) {
-					whitelist[_voter].isRegistered = false;
-				}
-			}
 		}
+	}
+}
 ```
 
-### Reset the process at the end (status `VotesTallied`)
+### Reset 
+Reset the process at the end (status `VotesTallied`)
 
 ```solidity
 function _resetProposals() private {
@@ -152,9 +162,9 @@ function reset() external onlyOwner isCurrentStatus(WorkflowStatus.VotesTallied)
 		}
 ```
 
-### Check if a proposals already exists
-
-`_proposalExists(...)` is called by de mandatory function `addProposal(...)`
+### Proposals exists
+Check if a proposals already exists
+> `_proposalExists(...)` is called by de mandatory function `addProposal(...)`
 
 ```solidity
 function _strcmp(string calldata s1, string memory s2) private pure returns (bool){
@@ -174,7 +184,8 @@ function _proposalExists(string calldata s1) private view returns (bool){
 }
 ```
 
-### Getter data more explicit
+### Explicit getters
+Getter data more explicit
 
 ```solidity
 function getCurrentStatus() external view returns (string memory){
@@ -202,6 +213,24 @@ function getProposal(uint _index) external view proposalExists(_index) returns (
 	return(proposals[_index]);
 }
 ```
+
 ### TODO:
 - [ ] Send message when worflow change
+```solidity
+// Work in progress
+	event LogNotSent(WorkflowStatus status, address registered);
+	event Response(bool success, bytes data);
+	function _notificationToRegistered() private {
+		for (uint i = _whitelist.length; i > 0; i--){
+			if (whitelist[_whitelist[i - 1]].isRegistered == true){
+				(bool success,bytes memory data) = address(_whitelist[i - 1]).call(abi.encodeWithSignature("test"));
+				emit Response(success, data);
+				if (!success){
+					emit LogNotSent(status, _whitelist[i - 1]);
+				}
+			}
+		}
+	}
+```
+
 - [ ] Manage equals
