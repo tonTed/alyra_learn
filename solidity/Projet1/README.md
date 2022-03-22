@@ -110,7 +110,7 @@ function addVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowSta
 ### External function
 
 ```solidity
-function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {...}
+function addProposal(string calldata _proposal) public onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {...}
 function vote(uint _proposalId) external onlyRegistered isCurrentStatus(WorkflowStatus.VotingSessionStarted) proposalExists(_proposalId) {...}
 function getWinner() external view isCurrentStatus(WorkflowStatus.VotesTallied) returns (uint){...}
 ```
@@ -201,6 +201,17 @@ function _addressExists(address[] memory _array) private view returns (bool){
 function requestToBeRegistered() external isCurrentStatus(WorkflowStatus.RegisteringVoters){
 	require(!_addressExists(_waitingRegistered), "You are already on the waiting list");
 	_waitingRegistered.push(msg.sender);
+}
+
+function getWaitingListRegistered() external view onlyOwner returns (address[] memory){
+	require(_waitingRegistered.length > 0, "The waitting list is empty");
+	return (_waitingRegistered);
+}
+
+function addWaitingList() external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters) {
+	for (uint i = _waitingRegistered.length; i > 0; i--){
+		this.addVoter(_waitingRegistered[i - 1]);
+	}
 }
 ```
 

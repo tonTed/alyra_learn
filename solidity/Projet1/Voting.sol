@@ -130,9 +130,15 @@ contract Voting is Ownable {
 			_waitingRegistered.push(msg.sender);
 		}
 
-		function getWaitingListRegistered() external view onlyOwner returns (address[] memory){
+		function getWaitingListRegistered() external view onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters) returns (address[] memory){
 			require(_waitingRegistered.length > 0, "The waitting list is empty");
 			return (_waitingRegistered);
+		}
+
+		function addWaitingList() external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters) {
+			for (uint i = _waitingRegistered.length; i > 0; i--){
+				this.addVoter(_waitingRegistered[i - 1]);
+			}
 		}
 		
 		// TODO function for new list without the voter removed
