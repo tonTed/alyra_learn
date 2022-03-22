@@ -202,3 +202,6 @@ function getProposal(uint _index) external view proposalExists(_index) returns (
 	return(proposals[_index]);
 }
 ```
+### TODO:
+- [ ] Send message when worflow change
+- [ ] Manage equals
