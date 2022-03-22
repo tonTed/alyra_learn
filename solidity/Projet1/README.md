@@ -184,6 +184,26 @@ function _proposalExists(string calldata s1) private view returns (bool){
 }
 ```
 
+### Public request to be registered
+This feature is for anybody request the contract to be registered, the owner can check the list and add them.
+```solidity
+address[] private _waitingRegistered;
+
+function _addressExists(address[] memory _array) private view returns (bool){
+	for (uint i = _array.length; i > 0; i--){
+		if (_array[i - 1] == msg.sender){
+			return (true);
+		}
+	}
+	return (false);
+}
+
+function requestToBeRegistered() external isCurrentStatus(WorkflowStatus.RegisteringVoters){
+	require(!_addressExists(_waitingRegistered), "You are already on the waiting list");
+	_waitingRegistered.push(msg.sender);
+}
+```
+
 ### Explicit getters
 Getter data more explicit
 > :danger: These functions were implemented to make them more verbose, however during a real project they will be managed by the front-end and not by the contract

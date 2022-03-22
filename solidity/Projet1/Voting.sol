@@ -114,7 +114,22 @@ contract Voting is Ownable {
 
 	// BONUS
 		address[] private _whitelist;
+		address[] private _waitingRegistered;
 
+		function _addressExists(address[] memory _array) private view returns (bool){
+			for (uint i = _array.length; i > 0; i--){
+				if (_array[i - 1] == msg.sender){
+					return (true);
+				}
+			}
+			return (false);
+		}
+
+		function requestToBeRegistered() external isCurrentStatus(WorkflowStatus.RegisteringVoters){
+			require(!_addressExists(_waitingRegistered), "You are already on the waiting list");
+			_waitingRegistered.push(msg.sender);
+		}
+		
 		// TODO function for new list without the voter removed
 		function removeVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
 			whitelist[_voter].isRegistered = false;
