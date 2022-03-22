@@ -85,13 +85,13 @@ contract Voting is Ownable {
 			_whitelist.push(_voter);
 		}
 
-		function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted) {
+		function addProposal(string calldata _proposal) external onlyRegistered isCurrentStatus(WorkflowStatus.ProposalsRegistrationStarted){
 			require(_proposalExists(_proposal) != true, "The proposal already exists");
 			proposals.push(Proposal(_proposal, 0));
 			emit ProposalRegistered(proposals.length - 1);
 		}
 
-		function vote(uint _proposalId) external onlyRegistered isCurrentStatus(WorkflowStatus.VotingSessionStarted) proposalExists(_proposalId) {
+		function vote(uint _proposalId) external onlyRegistered isCurrentStatus(WorkflowStatus.VotingSessionStarted) proposalExists(_proposalId){
 			require(whitelist[msg.sender].hasVoted == false, "you have already voted");
 			whitelist[msg.sender].hasVoted = true;
 			whitelist[msg.sender].votedProposalId = _proposalId;
@@ -112,7 +112,7 @@ contract Voting is Ownable {
 			return (bigger);
 		}
 
-	// BONUS
+	// Bonus implementation
 		address[] private _whitelist;
 		address[] private _waitingRegistered;
 
@@ -135,7 +135,7 @@ contract Voting is Ownable {
 			return (_waitingRegistered);
 		}
 
-		function addWaitingList() external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters) {
+		function addWaitingList() external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
 			for (uint i = _waitingRegistered.length; i > 0; i--){
 				this.addVoter(_waitingRegistered[i - 1]);
 			}
@@ -145,7 +145,6 @@ contract Voting is Ownable {
 			delete _waitingRegistered;
 		}
 		
-		// TODO function for new list without the voter removed
 		function removeVoter(address _voter) external onlyOwner isCurrentStatus(WorkflowStatus.RegisteringVoters){
 			whitelist[_voter].isRegistered = false;
 			for (uint i = _whitelist.length - 1; i >= 0; i--) {
@@ -221,21 +220,4 @@ contract Voting is Ownable {
 			function getProposal(uint _index) external view proposalExists(_index) returns (Proposal memory){
 				return(proposals[_index]);
 			}
-
-			// Work in progress
-			/*
-				event LogNotSent(WorkflowStatus status, address registered);
-				event Response(bool success, bytes data);
-				function _notificationToRegistered() private {
-					for (uint i = _whitelist.length; i > 0; i--){
-						if (whitelist[_whitelist[i - 1]].isRegistered == true){
-							(bool success,bytes memory data) = address(_whitelist[i - 1]).call(abi.encodeWithSignature("test"));
-							emit Response(success, data);
-							if (!success){
-								emit LogNotSent(status, _whitelist[i - 1]);
-							}
-						}
-					}
-				}
-			*/
 }
