@@ -4,3 +4,7 @@ tmp.sol
 Pipfile
 Pipfile.lock
 simple-storage-truffle/*
+.DS_Store
+solidity/.DS_Store
+solidity/contracts/0_test.sol
+truffleLearn/tmp
