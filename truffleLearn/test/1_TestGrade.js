@@ -2,8 +2,6 @@ const Grade = artifacts.require("../contracts/Grade.sol");
 const { BN, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
-// contract('Name', function)
-
 function expect_int(arg1, arg2){
 	expect(new BN(arg1)).to.be.bignumber.equal(new BN(arg2));
 }
@@ -17,7 +15,7 @@ contract('Grade', accounts => {
 	
 	
 	// TODO setter and getter only test together.
-	describe('With one student set', () => {
+	describe.skip('With one student set', () => {
 		before(async () => {
 			console.log("Creating Grade Instance, Setting a student and create getting the student");
 			GradeInstance = await Grade.new({from:owner});
