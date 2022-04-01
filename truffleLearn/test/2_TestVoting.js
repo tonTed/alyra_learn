@@ -207,9 +207,9 @@ contract.only('Voting', accounts => {
 			})
 		})
 		context(`ProposalsRegistrationStarted`, () =>{
-			before(async () => {
-				await VI.startProposalsRegistering({from: admin});
-			})
+			it(`changing status to ProposalsRegistrationStarted with startProposalsRegistering({from: admin}) event should be (0, 1)`,
+				async () => expectEvent(await VI.startProposalsRegistering({from: admin}), 'WorkflowStatusChange',
+				{previousStatus: new BN(0), newStatus: new BN(1)}))
 			describe(`adding proposals`, () =>{		
 				for (let voter_id = 0; voter_id < voters.length - 1; voter_id++){
 					it(`addProposal(${voters[voter_id].prop}, {from: ${voters[voter_id].at}}, event ProposalRegistered shoulb be emit ${voter_id}`,
