@@ -48,7 +48,7 @@ contract.only('Voting', accounts => {
 			name: 'RegisteringVoters',},
 		{
 			name: 'ProposalsRegistrationStarted',
-			fn: () => {return VI.startProposalsRegistering({from: admin})},
+			fn: () => VI.startProposalsRegistering({from: admin}),
 			revMess:' Registering proposals cant be started now',},
 		{
 			name: 'ProposalsRegistrationEnded',
@@ -76,13 +76,13 @@ contract.only('Voting', accounts => {
 		{
 			name: 'addProposal',
 			status: 1,
-			fn: () => VI.addProposal("unknow", {from: voters[0]}),
+			fn: () => VI.addProposal("unknow", {from: voters[0].at}),
 			revMess: 'Proposals are not allowed yet',},
-		// {
-		// 	name: 'setVote',
-		// 	status: 3,
-		// 	fn: () => VI.setVote(1, {from: voters[0]}),
-		// 	revMess: 'Voting session havent started yet',},
+		{
+			name: 'setVote',
+			status: 3,
+			fn: () => VI.setVote(1, {from: voters[0].at}),
+			revMess: 'Voting session havent started yet',},
 		{
 			name: 'getWinner',
 			status: 5,
@@ -205,6 +205,7 @@ contract.only('Voting', accounts => {
 				it(`getVoter(${unknow}, {from: voters[0]}).isRegistered should be return false`, 
 					async () => expect((await VI.getVoter(unknow, {from: voters[0].at})).isRegistered).false)
 			})
+			describe(`functions can't call with the current status`, () => tryFunctions(0));
 		})
 		context(`ProposalsRegistrationStarted`, () =>{
 			it(`changing status to ProposalsRegistrationStarted with startProposalsRegistering({from: admin}) event should be (0, 1)`,
@@ -228,6 +229,12 @@ contract.only('Voting', accounts => {
 				it(`inexisting proposal 10 shoulb be revert`, async () =>
 						await expectRevert.unspecified(VI.getOneProposal(10, {from: voters[0].at})))
 			})
+		})
+		context(`ProposalsRegistrationEnded`, () =>{
+			it(`changing status to ProposalsRegistrationEnded with endProposalsRegistering({from: admin}) event should be (1, 2)`,
+				async () => expectEvent(await VI.endProposalsRegistering({from: admin}), 'WorkflowStatusChange',
+				{previousStatus: new BN(1), newStatus: new BN(2)}))
+			describe(`functions can't call with the current status`, () => tryFunctions(2))
 		})
 	})
 })
