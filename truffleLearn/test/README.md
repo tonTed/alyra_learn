@@ -3,12 +3,10 @@
 ## Table of contents
 - [TOC](#Table-of-contents)
 - [Subject](#Subject)
-- [Supports](#Supports:)
-- [TODO](#Todo:)
+- [Supports](#Supports)
+- [TODO](#Todo)
 
 ## Subject
-> 📘 Info
->
 > You must then provide the unit tests of your smart contract. We do not expect 100% coverage of the smart contract but be sure to test the different possibilities of returns (event, revert).
 
 ## Supports:
