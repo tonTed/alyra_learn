@@ -10,6 +10,8 @@ const revMess = {
 	onlyOwner: "caller is not the owner",
 	onlyVoters: "ou're not a voter",
 	emptyString: "Vous ne pouvez pas ne rien proposer",
+	alreadyVote: 'You have already voted',
+	badProposal: 'Proposal not found',
 }
 
 contract.only('Voting', accounts => {
@@ -64,7 +66,7 @@ contract.only('Voting', accounts => {
 			revMess: 'Voting session havent started yet',},
 		{
 			name: 'VotesTallied',
-			fn: () => VI.tallyVotesDraw({from: admin}),
+			fn: () => VI.tallyVotes({from: admin}),
 			revMess: "Current status is not voting session ended",}
 	]
 
@@ -84,10 +86,40 @@ contract.only('Voting', accounts => {
 			fn: () => VI.setVote(1, {from: voters[0].at}),
 			revMess: 'Voting session havent started yet',},
 		{
-			name: 'getWinner',
-			status: 5,
-			fn: () => VI.getWinner({from: unknow}),
-			revMess: 'Votes are not tallied yet',},
+			name: 'ProposalsRegistrationStarted',
+			status: 0,
+			fn: () => VI.startProposalsRegistering({from: admin}),
+			revMess:' Registering proposals cant be started now',},
+		{
+			name: 'ProposalsRegistrationEnded',
+			status: 1,
+			fn: () => VI.endProposalsRegistering({from: admin}),
+			revMess: 'Registering proposals havent started yet',},
+		{
+			name: 'VotingSessionStarted',
+			status: 2,
+			fn: () => VI.startVotingSession({from: admin}),
+			revMess: 'Registering proposals phase is not finished',},
+		{
+			name: 'VotingSessionEnded',
+			status: 3,
+			fn: () => VI.endVotingSession({from: admin}),
+			revMess: 'Voting session havent started yet',},
+		{
+			name: 'VotesTallied',
+			status,
+			fn: () => VI.tallyVotes({from: admin}),
+			revMess: "Current status is not voting session ended",}
+		// {
+		// 	name: 'getWinner',
+		// 	status: 5,
+		// 	fn: () => VI.getWinner({from: unknow}),
+		// 	revMess: 'Votes are not tallied yet',},
+		// {
+		// 	name: 'tallyVotes',
+		// 	status: 4,
+		// 	fn: () => VI.tallyVotes({from: admin}),
+		// 	revMess: "Current status is not voting session ended",},
 	]
 
 	function tryFunctions(current_status){
@@ -120,7 +152,7 @@ contract.only('Voting', accounts => {
 				it("endProposalsRegistering",		() => assert.isDefined(VI.endProposalsRegistering));
 				it("startVotingSession",				() => assert.isDefined(VI.startVotingSession));
 				it("endVotingSession",					() => assert.isDefined(VI.endVotingSession));
-				it("tallyVotesDraw",						() => assert.isDefined(VI.tallyVotesDraw));
+				it("tallyVotes",						() => assert.isDefined(VI.tallyVotes));
 			})
 			describe("Private and Internal", () => {
 				it("winningProposalsID",	() => assert.isUndefined(VI.winningProposalsID));
@@ -144,8 +176,8 @@ contract.only('Voting', accounts => {
 				it("endVotingSession({from: unknow})",		async () =>
 					await expectRevert(VI.endVotingSession({from: unknow}),
 				revMess.onlyOwner));
-				it("tallyVotesDraw({from: unknow})",			async () =>
-					await expectRevert(VI.tallyVotesDraw({from: unknow}),
+				it("tallyVotes({from: unknow})",			async () =>
+					await expectRevert(VI.tallyVotes({from: unknow}),
 				revMess.onlyOwner));
 			})
 			describe("onlyVoters reverting if not voters", () => {
@@ -185,11 +217,11 @@ contract.only('Voting', accounts => {
 			})
 		}
 	})
-	context("Testing functions while complete sessions", () => {
+	context.only("test des fonction pendant un cas reel", () => {
 		before(async () => {
 			VI = await Voting.new({from: admin});
 		})
-		context("While RegisteringVoters session:", () =>{
+		context("While RegisteringVoters status:", () =>{
 			describe("adding voters {from: admin}:", () => {
 				for (let voter_id = 0; voter_id < voters.length; voter_id++){
 					it(`addVoter(${voters[voter_id].at}), event VoterRegistered shoulb be emit ${voters[voter_id].at}`,
@@ -207,7 +239,7 @@ contract.only('Voting', accounts => {
 			})
 			describe(`functions can't call with the current status`, () => tryFunctions(0));
 		})
-		context(`ProposalsRegistrationStarted`, () =>{
+		context(`While ProposalsRegistrationStarted status`, () =>{
 			it(`changing status to ProposalsRegistrationStarted with startProposalsRegistering({from: admin}) event should be (0, 1)`,
 				async () => expectEvent(await VI.startProposalsRegistering({from: admin}), 'WorkflowStatusChange',
 				{previousStatus: new BN(0), newStatus: new BN(1)}))
@@ -230,11 +262,74 @@ contract.only('Voting', accounts => {
 						await expectRevert.unspecified(VI.getOneProposal(10, {from: voters[0].at})))
 			})
 		})
-		context(`ProposalsRegistrationEnded`, () =>{
+		context(`While ProposalsRegistrationEnded status`, () =>{
 			it(`changing status to ProposalsRegistrationEnded with endProposalsRegistering({from: admin}) event should be (1, 2)`,
 				async () => expectEvent(await VI.endProposalsRegistering({from: admin}), 'WorkflowStatusChange',
 				{previousStatus: new BN(1), newStatus: new BN(2)}))
 			describe(`functions can't call with the current status`, () => tryFunctions(2))
+		})
+		context(`While VotingSessionStarted status`, () =>{
+			it(`changing status to VotingSessionStarted with startVotingSession({from: admin}) event should be (0, 1)`,
+				async () => expectEvent(await VI.startVotingSession({from: admin}), 'WorkflowStatusChange',
+				{previousStatus: new BN(2), newStatus: new BN(3)}))
+			describe(`adding votes`, () =>{		
+				for (let voter_id = 0; voter_id < voters.length - 1; voter_id++){
+					it(`setVote(${voters[voter_id].vote}, {from: ${voters[voter_id].at}}, event Voted shoulb be emit (${voters[voter_id].at}, ${voters[voter_id].vote})`,
+						async () => expectEvent(await VI.setVote(voters[voter_id].vote, {from: voters[voter_id].at}),
+						'Voted', {voter: voters[voter_id].at, proposalId: new BN(voters[voter_id].vote)}));
+				}
+				it(`setVote(${voters[0].vote}, {from: ${voters[0].at}}, shoulb be revert with message '${revMess.alreadyVote}'`,
+					async () => await expectRevert(VI.setVote(voters[0].vote, {from: voters[0].at}), revMess.alreadyVote));
+				it(`setVote(${voters[4].vote}, {from: ${voters[4].at}}, shoulb be revert with message '${revMess.badProposal}'`,
+					async () => await expectRevert(VI.setVote(voters[4].vote, {from: voters[4].at}), revMess.badProposal));
+			})
+			describe(`checking proposal voted`, () =>{
+				it(`proposalsArray(0).voteCount shoulb be 1`, async () =>
+					expect_equal_BN((await VI.proposalsArray(0, {from: voters[0].at})).voteCount, 1));
+				it(`proposalsArray(1).voteCount shoulb be 1`, async () =>
+					expect_equal_BN((await VI.proposalsArray(1, {from: voters[0].at})).voteCount, 1));
+				it(`proposalsArray(2).voteCount shoulb be 2`, async () =>
+					expect_equal_BN((await VI.proposalsArray(2, {from: voters[0].at})).voteCount, 2));
+				it(`proposalsArray(3).voteCount shoulb be 0`, async () =>
+					expect_equal_BN((await VI.proposalsArray(3, {from: voters[0].at})).voteCount, 0));
+				it(`proposalsArray(4).voteCount shoulb be revert`, async () =>
+					await expectRevert.unspecified(VI.proposalsArray(4, {from: voters[0].at})));
+			})
+			describe(`checking voters [isRegistered, hasVoted, votedProposalId]`, () =>{
+					it(`getVoter(0) shoulb [true, true, 2]`, async () =>{
+						assert.deepEqual(await VI.getVoter.call(voters[0].at, {from: voters[0].at}), [true, true, '2']);
+					})
+					it(`getVoter(1) should be [true, true, 0]`, async () =>{
+						assert.deepEqual(await VI.getVoter.call(voters[1].at, {from: voters[0].at}), [true, true, '0']);
+					})
+					it(`getVoter(2) should be [true, true, 2]`, async () =>{
+						assert.deepEqual(await VI.getVoter.call(voters[2].at, {from: voters[0].at}), [true, true, '2']);
+					})
+					it(`getVoter(3) should be [true, true, 1]`, async () =>{
+						assert.deepEqual(await VI.getVoter.call(voters[3].at, {from: voters[0].at}), [true, true, '1']);
+					})
+					it(`getVoter(4) should be [true, false, 1]`, async () =>{
+						assert.deepEqual(await VI.getVoter.call(voters[4].at, {from: voters[0].at}), [true, false, '0']);
+					})
+					it(`getVoter(unknow) should be [true, false, 1]`, async () =>{
+						assert.deepEqual(await VI.getVoter.call(unknow, {from: voters[0].at}), [false, false, '0']);
+					})
+			})
+			describe(`functions can't call with the current status`, () => tryFunctions(3))
+		})
+		context(`While VotingSessionEnded status`, () =>{
+			it(`changing status to VotingSessionEnded with endVotingSession({from: admin}) event should be (3, 4)`,
+				async () => expectEvent(await VI.endVotingSession({from: admin}), 'WorkflowStatusChange',
+				{previousStatus: new BN(3), newStatus: new BN(4)}))
+			describe(`functions can't call with the current status`, () => tryFunctions(4))
+		})
+		context(`While VotesTallied status`, () =>{
+			it(`changing status to VotesTallied with tallyVotes({from: admin}) event should be (4, 5)`,
+				async () => expectEvent(await VI.tallyVotes({from: admin}), 'WorkflowStatusChange',
+				{previousStatus: new BN(4), newStatus: new BN(5)}))
+			it(`winningProposalID() should be return 2`, async () =>
+				expect_equal_BN(await VI.winningProposalID({from: admin}), 2));
+			describe(`functions can't call with the current status`, () => tryFunctions(5))
 		})
 	})
 })
