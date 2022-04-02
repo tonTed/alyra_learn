@@ -17,31 +17,11 @@ const revMess = {
 contract.only('Voting', accounts => {
 	const admin = accounts[0];
 	const voters = [
-		{
-			at: accounts[1],
-			prop: "prop1",
-			vote: 2,
-		},
-		{
-			at: accounts[2],
-			prop: "prop2",
-			vote: 0,
-		},
-		{
-			at: accounts[3],
-			prop: "prop3",
-			vote: 2,
-		},
-		{
-			at: accounts[4],
-			prop: "prop4",
-			vote: 1,
-		},
-		{
-			at: accounts[5],
-			prop: "",
-			vote: 8,
-		},
+		{at: accounts[1], prop: "prop1",	vote: 2},
+		{at: accounts[2], prop: "prop2",	vote: 0},
+		{at: accounts[3], prop: "prop3",	vote: 2},
+		{at: accounts[4], prop: "prop4",	vote: 1},
+		{at: accounts[5], prop: "",				vote: 8}
 	]
 	const noVoter = accounts[8];
 	const unknow = accounts[9];
@@ -286,7 +266,8 @@ contract.only('Voting', accounts => {
 			})
 			describe(`checking voters [isRegistered, hasVoted, votedProposalId]`, () =>{
 					it(`getVoter(0) shoulb [true, true, 2]`, async () =>{
-						assert.deepEqual(await VI.getVoter.call(voters[0].at, {from: voters[0].at}), [true, true, '2']);
+						// assert.deepEqual(await VI.getVoter.call(voters[0].at, {from: voters[0].at}), [true, true, '2']);
+						expect(await VI.getVoter.call(voters[0].at, {from: voters[0].at})).deep.equal([true, true, '2']);
 					})
 					it(`getVoter(1) should be [true, true, 0]`, async () =>{
 						assert.deepEqual(await VI.getVoter.call(voters[1].at, {from: voters[0].at}), [true, true, '0']);
