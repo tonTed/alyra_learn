@@ -107,19 +107,9 @@ contract.only('Voting', accounts => {
 			revMess: 'Voting session havent started yet',},
 		{
 			name: 'VotesTallied',
-			status,
+			status: 4,
 			fn: () => VI.tallyVotes({from: admin}),
 			revMess: "Current status is not voting session ended",}
-		// {
-		// 	name: 'getWinner',
-		// 	status: 5,
-		// 	fn: () => VI.getWinner({from: unknow}),
-		// 	revMess: 'Votes are not tallied yet',},
-		// {
-		// 	name: 'tallyVotes',
-		// 	status: 4,
-		// 	fn: () => VI.tallyVotes({from: admin}),
-		// 	revMess: "Current status is not voting session ended",},
 	]
 
 	function tryFunctions(current_status){
@@ -143,7 +133,6 @@ contract.only('Voting', accounts => {
 				it("proposalsArray",		() => assert.isDefined(VI.proposalsArray));
 				it("getVoter",					() => assert.isDefined(VI.getVoter));
 				it("getOneProposal",		() => assert.isDefined(VI.getOneProposal));
-				it("getWinner",					() => assert.isDefined(VI.getWinner));
 				it("addVoter",					() => assert.isDefined(VI.addVoter));
 				it("addProposal",				() => assert.isDefined(VI.addProposal));
 				it("setVote",						() => assert.isDefined(VI.setVote));
@@ -217,7 +206,7 @@ contract.only('Voting', accounts => {
 			})
 		}
 	})
-	context.only("test des fonction pendant un cas reel", () => {
+	context("test des fonction pendant un cas reel", () => {
 		before(async () => {
 			VI = await Voting.new({from: admin});
 		})
