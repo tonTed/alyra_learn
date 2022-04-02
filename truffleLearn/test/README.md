@@ -3,7 +3,7 @@
 ## Table of contents
 
 ## Subject
-| You must then provide the unit tests of your smart contract. We do not expect 100% coverage of the smart contract but be sure to test the different possibilities of returns (event, revert).
+> You must then provide the unit tests of your smart contract. We do not expect 100% coverage of the smart contract but be sure to test the different possibilities of returns (event, revert).
 
 ## Supports:
 
