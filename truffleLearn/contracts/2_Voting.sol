@@ -45,27 +45,19 @@ contract Voting is Ownable {
 
     // ::::::::::::: GETTERS ::::::::::::: //
 
-    function getVoter(address _addr) external view onlyVoters returns (Voter memory)
-    {
+    function getVoter(address _addr) external view onlyVoters returns (Voter memory){
         return voters[_addr];
     }
 
-    function getOneProposal(uint256 _id)
-        external
-        view
-        onlyVoters
-        returns (Proposal memory)
-    {
+    function getOneProposal(uint256 _id) external view onlyVoters returns (Proposal memory){
         return proposalsArray[_id];
     }
 
     // ::::::::::::: REGISTRATION ::::::::::::: //
 
     function addVoter(address _addr) public onlyOwner {
-        require(
-            workflowStatus == WorkflowStatus.RegisteringVoters,
-            "Voters registration is not open yet"
-        );
+        require(workflowStatus == WorkflowStatus.RegisteringVoters,
+		"Voters registration is not open yet");
         require(voters[_addr].isRegistered != true, "Already registered");
 
         voters[_addr].isRegistered = true;
@@ -75,8 +67,7 @@ contract Voting is Ownable {
     // ::::::::::::: PROPOSAL ::::::::::::: //
 
     function addProposal(string memory _desc) external onlyVoters {
-        require(
-            workflowStatus == WorkflowStatus.ProposalsRegistrationStarted,
+        require( workflowStatus == WorkflowStatus.ProposalsRegistrationStarted,
             "Proposals are not allowed yet"
         );
         require(

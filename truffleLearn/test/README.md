@@ -10,6 +10,8 @@
 > You must then provide the unit tests of your smart contract. We do not expect 100% coverage of the smart contract but be sure to test the different possibilities of returns (event, revert).
 
 ## Supports:
+- [Chai Assertion Library / API](https://www.chaijs.com/api/)
+- [OpenZeppelin TestHelpers / API](https://docs.openzeppelin.com/test-helpers/0.5/api)
 
 ## Todo:
 - [ ] Readme
