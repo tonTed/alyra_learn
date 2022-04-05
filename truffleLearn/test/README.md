@@ -132,6 +132,7 @@ expectRevert();
 
 - <details>
   <summary>Revert messages:</summary>
+	
   ```javascript
 	const revMess = {
 		onlyOwner: "caller is not the owner",
@@ -144,6 +145,7 @@ expectRevert();
   </details>
 - <details>
   <summary>Function for expect numbers:</summary>
+	
   ```javascript
 	function expect_equal_BN(arg1, arg2){
 		expect(new BN(arg1)).to.be.bignumber.equal(new BN(arg2));
@@ -152,6 +154,7 @@ expectRevert();
   </details>
 - <details>
   <summary>Accounts:</summary>
+	
   ```javascript
 	const admin = accounts[0];
 	const voters = [
@@ -167,6 +170,7 @@ expectRevert();
   </details>
 - <details>
   <summary>Object with functions:</summary>
+	
   ```javascript
 	const funcs = [{
 			name: 'addVoter',
@@ -213,6 +217,7 @@ expectRevert();
   </details>
 - <details>
   <summary>Function for try alls functions can't be call in a specific status:</summary>
+	
   ```javascript
 	function tryFunctions(current_status){
 		describe(`Functions can not call with the status ${status[current_status]}:`, () => {
