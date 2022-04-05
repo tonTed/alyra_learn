@@ -67,22 +67,22 @@ assert.isUndefined();
 		it("winningProposalID",	() => assert.isDefined(VI.winningProposalID));
 		it("workflowsStatus",	() => assert.isDefined(VI.workflowStatus));
 		it("proposalsArray",	() => assert.isDefined(VI.proposalsArray));
-		it("getVoter",			() => assert.isDefined(VI.getVoter));
+		it("getVoter",		() => assert.isDefined(VI.getVoter));
 		it("getOneProposal",	() => assert.isDefined(VI.getOneProposal));
-		it("addVoter",			() => assert.isDefined(VI.addVoter));
-		it("addProposal",		() => assert.isDefined(VI.addProposal));
-		it("setVote",			() => assert.isDefined(VI.setVote));
+		it("addVoter",		() => assert.isDefined(VI.addVoter));
+		it("addProposal",	() => assert.isDefined(VI.addProposal));
+		it("setVote",		() => assert.isDefined(VI.setVote));
 				
 		it("startProposalsRegistering",	() => assert.isDefined(VI.startProposalsRegistering));
 		it("endProposalsRegistering",	() => assert.isDefined(VI.endProposalsRegistering));
-		it("startVotingSession",		() => assert.isDefined(VI.startVotingSession));
-		it("endVotingSession",			() => assert.isDefined(VI.endVotingSession));
-		it("tallyVotes",				() => assert.isDefined(VI.tallyVotes));
+		it("startVotingSession",	() => assert.isDefined(VI.startVotingSession));
+		it("endVotingSession",		() => assert.isDefined(VI.endVotingSession));
+		it("tallyVotes",		() => assert.isDefined(VI.tallyVotes));
 	})
 	describe("Private & Internal:", () => {
 		it("winningProposalsID",	() => assert.isUndefined(VI.winningProposalsID));
 		it("winningProposals",		() => assert.isUndefined(VI.winningProposals));
-		it("voters",				() => assert.isUndefined(VI.voters));
+		it("voters",			() => assert.isUndefined(VI.voters));
 	})
   ```
 </details><br>
@@ -98,17 +98,17 @@ expectRevert();
   
   ```javascript
     describe(`onlyOwner: revert with message ${revMess.onlyOwner}`, () => {
-		it("addVoter(voters[0], {from: unknow})", 			async () => 
+		it("addVoter(voters[0], {from: unknow})", 	async () => 
 			await expectRevert(VI.addVoter(voters[0].at, {from: unknow}), revMess.onlyOwner));
 		it("startProposalsRegistering({from: unknow})",	async () =>
 			await expectRevert(VI.startProposalsRegistering({from: unknow}), revMess.onlyOwner));
-		it("endProposalsRegistering({from: unknow})",		async () =>
+		it("endProposalsRegistering({from: unknow})",	async () =>
 			await expectRevert(VI.endProposalsRegistering({from: unknow}), revMess.onlyOwner));
-		it("startVotingSession({from: unknow})",				async () =>
+		it("startVotingSession({from: unknow})",	async () =>
 			await expectRevert(VI.startVotingSession({from: unknow}), revMess.onlyOwner));
-		it("endVotingSession({from: unknow})",					async () =>
+		it("endVotingSession({from: unknow})",		async () =>
 			await expectRevert(VI.endVotingSession({from: unknow}), revMess.onlyOwner));
-		it("tallyVotes({from: unknow})",								async () =>
+		it("tallyVotes({from: unknow})",		async () =>
 			await expectRevert(VI.tallyVotes({from: unknow}), revMess.onlyOwner));
 	})
 	describe(`onlyVoters: revert with message ${revMess.onlyVoters}`, () => {
@@ -118,7 +118,7 @@ expectRevert();
 			await expectRevert(VI.getOneProposal(0, {from: noVoter}), revMess.onlyVoters));
 		it("addProposal('desc', {from: admin})",	async () =>
 			await expectRevert(VI.addProposal("desc", {from: admin}), revMess.onlyVoters));
-		it("setVote(0, {from: noVoter})",					async () =>
+		it("setVote(0, {from: noVoter})",		async () =>
 			await expectRevert(VI.setVote(0, {from: noVoter}), revMess.onlyVoters));
 	})
   ```
@@ -159,7 +159,7 @@ expectRevert();
 		{at: accounts[2], prop: "prop2",	vote: 0},
 		{at: accounts[3], prop: "prop3",	vote: 2},
 		{at: accounts[4], prop: "prop4",	vote: 1},
-		{at: accounts[5], prop: "",			vote: 8}
+		{at: accounts[5], prop: "",		vote: 8}
 	]
 	const noVoter = accounts[8];
 	const unknow = accounts[9];
@@ -239,17 +239,17 @@ expect(...).deep.equal(...);
   
   ```javascript
     describe(`onlyOwner: revert with message ${revMess.onlyOwner}`, () => {
-		it("addVoter(voters[0], {from: unknow})", 			async () => 
+		it("addVoter(voters[0], {from: unknow})", 	async () => 
 			await expectRevert(VI.addVoter(voters[0].at, {from: unknow}), revMess.onlyOwner));
 		it("startProposalsRegistering({from: unknow})",	async () =>
 			await expectRevert(VI.startProposalsRegistering({from: unknow}), revMess.onlyOwner));
-		it("endProposalsRegistering({from: unknow})",		async () =>
+		it("endProposalsRegistering({from: unknow})",	async () =>
 			await expectRevert(VI.endProposalsRegistering({from: unknow}), revMess.onlyOwner));
-		it("startVotingSession({from: unknow})",				async () =>
+		it("startVotingSession({from: unknow})",	async () =>
 			await expectRevert(VI.startVotingSession({from: unknow}), revMess.onlyOwner));
-		it("endVotingSession({from: unknow})",					async () =>
+		it("endVotingSession({from: unknow})",		async () =>
 			await expectRevert(VI.endVotingSession({from: unknow}), revMess.onlyOwner));
-		it("tallyVotes({from: unknow})",								async () =>
+		it("tallyVotes({from: unknow})",		async () =>
 			await expectRevert(VI.tallyVotes({from: unknow}), revMess.onlyOwner));
 	})
 	describe(`onlyVoters: revert with message ${revMess.onlyVoters}`, () => {
@@ -259,7 +259,7 @@ expect(...).deep.equal(...);
 			await expectRevert(VI.getOneProposal(0, {from: noVoter}), revMess.onlyVoters));
 		it("addProposal('desc', {from: admin})",	async () =>
 			await expectRevert(VI.addProposal("desc", {from: admin}), revMess.onlyVoters));
-		it("setVote(0, {from: noVoter})",					async () =>
+		it("setVote(0, {from: noVoter})",		async () =>
 			await expectRevert(VI.setVote(0, {from: noVoter}), revMess.onlyVoters));
 	})
   ```
