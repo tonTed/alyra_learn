@@ -14,7 +14,7 @@ const revMess = {
 	badProposal: 'Proposal not found',
 }
 
-contract.only('Voting', accounts => {
+contract('Voting', accounts => {
 	const admin = accounts[0];
 	const voters = [
 		{at: accounts[1], prop: "prop1",	vote: 2},
@@ -90,11 +90,11 @@ contract.only('Voting', accounts => {
 	}
 	
 	// VI = VotingInstance
-	context("Test => visibilities and accessibilities in functions and variables:", () => {
+	context("\nTest => visibilities and accessibilities in functions and variables:", () => {
 		before(async () => {
 			VI = await Voting.new({from: admin});
 		})
-		context("\nVisibilities:", () => {
+		context("Visibilities:", () => {
 			describe("Public & External:", () => {
 				it("winningProposalID",	() => assert.isDefined(VI.winningProposalID));
 				it("workflowsStatus",		() => assert.isDefined(VI.workflowStatus));
@@ -144,7 +144,7 @@ contract.only('Voting', accounts => {
 			})
 		})
 	})
-	context.only("\n\nTest => Full process testing", () => {
+	context("\n\nTest => Full process testing", () => {
 		before(async () =>{
 			VI = await Voting.new({from: admin})
 		})
