@@ -8,10 +8,11 @@ function expect_equal_BN(arg1, arg2){
 
 const revMess = {
 	onlyOwner: "caller is not the owner",
-	onlyVoters: "ou're not a voter",
+	onlyVoters: "You're not a voter",
 	emptyString: "Vous ne pouvez pas ne rien proposer",
 	alreadyVote: 'You have already voted',
 	badProposal: 'Proposal not found',
+	alreadyVoter: "Already registered",
 }
 
 contract('Voting', accounts => {
@@ -155,8 +156,10 @@ contract('Voting', accounts => {
 			describe("Adding voters {from: admin}:", () => {
 				for (let voter_id = 0; voter_id < voters.length; voter_id++){
 					it(`addVoter(voters[${voter_id}]), event VoterRegistered shoulb be emit [${voters[voter_id].at}]`,
-					async () => expectEvent(await VI.addVoter(voters[voter_id].at, {from: admin}), 'VoterRegistered', {voterAddress: voters[voter_id].at}))
+						async () => expectEvent(await VI.addVoter(voters[voter_id].at, {from: admin}), 'VoterRegistered', {voterAddress: voters[voter_id].at}))
 				}
+				it(`addVoter(voters[0]), shoulb be revert with message: ${revMess.alreadyVoter}`, 
+						async () => await expectRevert(VI.addVoter(voters[0].at, {from: admin}), revMess.alreadyVoter))
 			})
 			describe(`Getting voters:`, () =>{
 				for (let voter_id = 0; voter_id < voters.length; voter_id++){
