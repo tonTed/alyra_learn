@@ -281,37 +281,7 @@ expectEvent(...)
 expect(...).equal(...);
 expect(...).deep.equal(...);
 ```
-<details>
-  <summary>Functions:</summary>
-  
-  ```javascript
-    describe(`onlyOwner: revert with message ${revMess.onlyOwner}`, () => {
-		it("addVoter(voters[0], {from: unknow})", 	async () => 
-			await expectRevert(VI.addVoter(voters[0].at, {from: unknow}), revMess.onlyOwner));
-		it("startProposalsRegistering({from: unknow})",	async () =>
-			await expectRevert(VI.startProposalsRegistering({from: unknow}), revMess.onlyOwner));
-		it("endProposalsRegistering({from: unknow})",	async () =>
-			await expectRevert(VI.endProposalsRegistering({from: unknow}), revMess.onlyOwner));
-		it("startVotingSession({from: unknow})",	async () =>
-			await expectRevert(VI.startVotingSession({from: unknow}), revMess.onlyOwner));
-		it("endVotingSession({from: unknow})",		async () =>
-			await expectRevert(VI.endVotingSession({from: unknow}), revMess.onlyOwner));
-		it("tallyVotes({from: unknow})",		async () =>
-			await expectRevert(VI.tallyVotes({from: unknow}), revMess.onlyOwner));
-	})
-	describe(`onlyVoters: revert with message ${revMess.onlyVoters}`, () => {
-		it("getVoter(voters[0], {from: admin})",	async () =>
-			await expectRevert(VI.getVoter(voters[0].at, {from: admin}), revMess.onlyVoters));
-		it("getOneProposal(0, {from: noVoter})",	async () =>
-			await expectRevert(VI.getOneProposal(0, {from: noVoter}), revMess.onlyVoters));
-		it("addProposal('desc', {from: admin})",	async () =>
-			await expectRevert(VI.addProposal("desc", {from: admin}), revMess.onlyVoters));
-		it("setVote(0, {from: noVoter})",		async () =>
-			await expectRevert(VI.setVote(0, {from: noVoter}), revMess.onlyVoters));
-	})
-  ```
-</details><br>
-
+	
 ---
 
 <br>
