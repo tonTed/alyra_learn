@@ -12,8 +12,22 @@
 - [Supports](#Supports)
 - [TODO](#Todo)
 
+---
+---
+
+
 ## Subject
 > You must then provide the unit tests of your smart contract. We do not expect 100% coverage of the smart contract but be sure to test the different possibilities of returns (event, revert).
+
+---
+
+## Rendering:
+- [voting.sol](https://github.com/tonTed/alyra_learn/blob/master/truffleLearn/contracts/2_Voting.sol)
+- [test_voting.js](https://github.com/tonTed/alyra_learn/blob/master/truffleLearn/test/2_TestVoting.js)
+
+---
+---
+<br>
 
 ## Global test architecture:
 > Structure of how the test works, the tests will be detailed in the following.
@@ -53,6 +67,11 @@
      └── While VotesTallied:
           └── Functions can not call with the status VotesTallied:
 ```
+
+---
+
+<br>
+
 ## Detailed test:
 
 ### Visibilities:
@@ -93,6 +112,10 @@ assert.isUndefined();
   ```
 </details>
 
+---
+
+<br>
+
 ### Accessibilities:
 > Then we test all limited access to functions, and therefore test modifier (require access).
 
@@ -131,10 +154,17 @@ expectRevert();
   ```
 </details>
 
+---
+
+<br>
+
 ### Full process Worflow:
 > At last a simulation of the process is launched.
 - [Helpers](#Helpers)
 - [Assertion Styles](#Assertion-Styles)
+
+---
+
 #### Helpers:
 > In order to facilitate the implementation and understanding, we have implemented helpers
 
@@ -240,6 +270,8 @@ expectRevert();
   ```
   </details>
 
+---
+
 #### Assertion Styles:
 ```js
 expectRevert(...);
@@ -278,17 +310,32 @@ expect(...).deep.equal(...);
   ```
 </details><br>
 
+---
+
+<br>
+
 ## Assertion Styles Used:
 ```js
 assert.isDefined();
 assert.isUndefined();
-expectRevert();
+expectRevert(...);
+expectEvent(...)
+expect(...).equal(...);
+expect(...).deep.equal(...);
+BN()
 ```
+---
+
+<br>
 
 ## Supports:
 - [Chai Assertion Library / API](https://www.chaijs.com/api/)
 - [OpenZeppelin TestHelpers / API](https://docs.openzeppelin.com/test-helpers/0.5/api)
 - [Mocha documentation](https://mochajs.org/)
+
+---
+
+<br>
 
 ## Todo:
 - [ ] Readme
