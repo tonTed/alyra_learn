@@ -12,10 +12,11 @@
 ## Supports:
 - [Chai Assertion Library / API](https://www.chaijs.com/api/)
 - [OpenZeppelin TestHelpers / API](https://docs.openzeppelin.com/test-helpers/0.5/api)
+- [Mocha documentation](https://mochajs.org/)
 
 ## Todo:
 - [ ] Readme
 - [x] Remove the testing of all status (already test with `tryFcuntions()`), just add the current status check in each test
-- [ ] Refactor status number by a value in each context.
-- [ ] improve message in each `context`, `describe`, `it`
-- [ ] change assert by expect
+- [x] Refactor status number by a value in each context.
+- [x] improve message in each `context`, `describe`, `it`
+- [x] change assert by expect
