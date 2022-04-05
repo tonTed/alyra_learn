@@ -8,3 +8,9 @@ simple-storage-truffle/*
 solidity/.DS_Store
 solidity/contracts/0_test.sol
 truffleLearn/tmp
+truffleLearn/coverage
+truffleLearn/migrations/coverage
+truffleLearn/node_modules
+truffleLearn/package-lock.json
+truffleLearn/package.json
+truffleLearn/coverage.json
