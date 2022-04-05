@@ -3,6 +3,12 @@
 ## Table of contents
 - [TOC](#Table-of-contents)
 - [Subject](#Subject)
+- [Global test architecture](#Global-test-architecture)
+- [Detailed test](#Detailed-test)
+	- [Visibilities](#Visibilities)
+	- [Accessibilities](#Visibilities)
+	- [Full process Worflow](#Full-process-Worflow)
+- [Assertion Styles Used](#Assertion-Styles-Used)
 - [Supports](#Supports)
 - [TODO](#Todo)
 
@@ -85,10 +91,11 @@ assert.isUndefined();
 		it("voters",			() => assert.isUndefined(VI.voters));
 	})
   ```
-</details><br>
+</details>
 
 ### Accessibilities:
 > Then we test all limited access to functions, and therefore test modifier (require access).
+
 `onlyOwner` & `onlyVoters`.
 ```js
 expectRevert();
@@ -122,12 +129,13 @@ expectRevert();
 			await expectRevert(VI.setVote(0, {from: noVoter}), revMess.onlyVoters));
 	})
   ```
-</details><br>
+</details>
 
 ### Full process Worflow:
 > At last a simulation of the process is launched.
-
-#### Helpers
+- [Helpers](#Helpers)
+- [Assertion Styles](#Assertion-Styles)
+#### Helpers:
 > In order to facilitate the implementation and understanding, we have implemented helpers
 
 - <details>
@@ -232,7 +240,7 @@ expectRevert();
   ```
   </details>
 
-#### Assertion Styles Used:
+#### Assertion Styles:
 ```js
 expectRevert(...);
 expectEvent(...)
